@@ -14,6 +14,9 @@ spec:
       labels:
         pod: assignment3-django-deploy
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: assignment3-django-deploy
           image: nyuappsec/assign3:v0
@@ -21,7 +24,10 @@ spec:
             - containerPort: 8000
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: thisisatestthing. 
+              valueFrom:
+                secretKeyRef:
+                    name: custom-secrets
+                    key: mysqlrootpass 
 
             - name: MYSQL_DB
               value: GiftcardSiteDB
@@ -29,9 +35,15 @@ spec:
             - name: MYSQL_HOST
               value: mysql-service
 
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                    name: custom-secrets
+                    key: secretkey 
+
             - name: ALLOWED_HOSTS
               value: "*,"
-
+            
             - name: ADMIN_UNAME
               valueFrom:
                 secretKeyRef:
