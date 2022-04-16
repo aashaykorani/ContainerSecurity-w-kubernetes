@@ -11,3 +11,5 @@ RUN chmod 777 /vol/static
 RUN chmod +x /sleep.sh
 
 # ToDo Create a user with username 'nginx'
+RUN addgroup -S nginx2 && adduser -S nginx2 -G nginx2
+USER nginx2
