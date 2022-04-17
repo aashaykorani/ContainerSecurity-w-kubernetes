@@ -125,3 +125,7 @@ LOAD DATA INFILE '/products.csv' INTO TABLE LegacySite_product FIELDS TERMINATED
 -- Put user into table.
 --
 LOAD DATA INFILE '/users.csv' INTO TABLE LegacySite_user FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
+SET persist default_password_lifetime = 100;
+
+SET PERSIST password_history = 5;
+SET PERSIST password_reuse_interval = 200;
