@@ -20,6 +20,12 @@ spec:
             - name: MYSQL_DATABASE
               value: GiftcardSiteDB
 
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                    name: custom-secrets
+                    key: mysqlrootpass
+
           ports:
             - containerPort: 3306
           volumeMounts:
