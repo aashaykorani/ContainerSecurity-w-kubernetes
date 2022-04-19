@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pi
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: pi
+            image: nyuappsec/assign3-db:v0
+            command: ["/bin/sh"]
+            args: ["-c", "echo '\nCHECKING FOR PASSWORD LIFETIME\n' && mysql --user=root --password=${MYSQL_ROOT_PASSWORD} 
+            --database=${MYSQL_DATABASE} --host=mysql-service -e 'SELECT VARIABLE_NAME, VARIABLE_VALUE FROM 
+            performance_schema.global_variables;' 2>/dev/null | grep default_password_lifetime; 
+            echo '\nCHECKING FOR PASSWORD POLICY\n' && mysql --user=root --password=${MYSQL_ROOT_PASSWORD} 
+            --database=${MYSQL_DATABASE} --host=mysql-service -e 'SELECT VARIABLE_NAME, VARIABLE_VALUE FROM 
+            performance_schema.global_variables' 2>/dev/null | grep -e password_history -e password_reuse_interval"]
+            env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: custom-secrets
+                  key: mysqlrootpass
+
+            - name: MYSQL_DATABASE
+              value: GiftcardSiteDB
+          restartPolicy: Never
