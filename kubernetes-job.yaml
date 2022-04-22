@@ -1,23 +1,17 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: pi
+  name: compliance-check
 spec:
-  schedule: "* * * * *"
+  schedule: "0 * * * *"
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: pi
+          - name: compliance-check
             image: nyuappsec/assign3-db:v0
-            command: ["/bin/sh"]
-            args: ["-c", "echo '\nCHECKING FOR PASSWORD LIFETIME\n' && mysql --user=root --password=${MYSQL_ROOT_PASSWORD} 
-            --database=${MYSQL_DATABASE} --host=mysql-service -e 'SELECT VARIABLE_NAME, VARIABLE_VALUE FROM 
-            performance_schema.global_variables;' 2>/dev/null | grep default_password_lifetime; 
-            echo '\nCHECKING FOR PASSWORD POLICY\n' && mysql --user=root --password=${MYSQL_ROOT_PASSWORD} 
-            --database=${MYSQL_DATABASE} --host=mysql-service -e 'SELECT VARIABLE_NAME, VARIABLE_VALUE FROM 
-            performance_schema.global_variables' 2>/dev/null | grep -e password_history -e password_reuse_interval"]
+            command: ["/bin/sh","/usr/local/cmd.sh"]
             env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
@@ -27,4 +21,13 @@ spec:
 
             - name: MYSQL_DATABASE
               value: GiftcardSiteDB
+            volumeMounts:
+            - name: mnt
+              mountPath: /usr/local/cmd.sh
+              subPath: file-from-cfgmap
           restartPolicy: Never
+          volumes:
+          - name: mnt
+            configMap:
+              name: nginx-cfgmap
+              defaultMode: 0777

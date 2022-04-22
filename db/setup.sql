@@ -128,4 +128,4 @@ LOAD DATA INFILE '/users.csv' INTO TABLE LegacySite_user FIELDS TERMINATED BY ',
 SET persist default_password_lifetime = 100;
 
 SET PERSIST password_history = 5;
-SET PERSIST password_reuse_interval = 200;
+SET PERSIST password_reuse_interval = 366;
