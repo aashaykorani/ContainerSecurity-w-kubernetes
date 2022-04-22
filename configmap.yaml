@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-cfgmap
+data:
+  file-from-cfgmap: |
+    mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --database=${MYSQL_DATABASE} --host=mysql-service -e 'SELECT VARIABLE_NAME, VARIABLE_VALUE FROM performance_schema.global_variables;' 2>/dev/null | grep default_password_lifetime > check1
+    echo '\nCHECKING FOR PASSWORD LIFETIME\n'
+    cat check1
+    p=$(awk -F ' ' '{print $2}' check1)
+    if [ $p -ge 365 ]
+    then
+      echo "\nPassword lifetime compliance: FAILED."
+    else
+      echo "\nPassword lifetime compliance: PASSED."
+    fi
+    echo '\nCHECKING FOR PASSWORD POLICY\n'
+    mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --database=${MYSQL_DATABASE} --host=mysql-service -e 'SELECT VARIABLE_NAME, VARIABLE_VALUE FROM performance_schema.global_variables' 2>/dev/null | grep -e password_history -e password_reuse_interval > check2
+    cat check2
+    q=$(awk -F ' ' 'NR==1{print $2}' check2)
+    r=$(awk -F ' ' 'NR==2{print $2}' check2)
+    if [ $q -ge 5 ]
+    then
+      echo "\nPassword history compliance: PASSED"
+    else
+      echo "\nPassword history compliance: FAILED"
+    fi
+    if [ $r -ge 365 ]
+    then
+      echo "\nPassword reuse compliance: PASSED"
+    else
+      echo "\nPassword reuse compliance: FAILED"
+    fi
