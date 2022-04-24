@@ -3,18 +3,20 @@ kind: PodSecurityPolicy
 metadata:
   name: unrestricted
 spec:
-  privileged: true
+  privileged: false
+  requiredDropCapabilities:
+  - NET_RAW
   seLinux:
     rule: RunAsAny
   supplementalGroups:
     rule: RunAsAny
   runAsUser:
-    rule: RunAsAny
+    rule: MustRunAsNonRoot
   fsGroup:
     rule: RunAsAny
   volumes:
     - "*"
-  hostIPC: true
-  hostPID: true
-  hostNetwork: true
-  allowPrivilegeEscalation: true
+  hostIPC: false
+  hostPID: false
+  hostNetwork: false
+  allowPrivilegeEscalation: false
