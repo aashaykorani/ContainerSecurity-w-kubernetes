@@ -1,7 +1,6 @@
 # Part 1: Remediate Security Review Findings
 
 ## Finding 1: Kubernetes Control #5.2.1
----
 We can see that the when we run `kubectl get psp` to view the security policy, our container is running with full privileges which should not be allowed because then the container will be allowed to do almost everything the host can do. Additionally, in the image below when we run the command mentioned in the benchmark file to get the value for `spec.privileged` field from the psp we can see that it returns **true**.
 
 ![](./Artifacts/policy-1-1.png)
@@ -11,7 +10,6 @@ In order to remediate the finding, we open the `django-psp.yaml` file in the Gif
 ![](./Artifacts/policy-1-2.png)
 
 ## Finding 2: Kubernetes Control #5.2.2
----
 Here, we have found that our container shares the host process ID namespace and it should not be allowed because this can assist in escalating privileges outside of the container. When we run the command in the benchmark to fetch for `spec.hostPID` value from the psp we can see that the output is **true**.
 
 ![](./Artifacts/policy-2-1.png)
@@ -21,7 +19,6 @@ In order to remediate the finding, we edit the psp file and change the hostPID f
 ![](./Artifacts/policy-2-2.png)
 
 ## Finding 3: Kubernetes Control #5.2.3
----
 Here, we have found that our container shares the host IPC namespace and this should not be allowed because this it can be used to interact with processes outside of the container. On running the command in the benchmark to fetch the value for `spec.hostIPC` from the psp, it gives an output of **true**.
 
 ![](./Artifacts/policy-3-1.png)
@@ -31,7 +28,6 @@ In order to remediate the finding, we edit the hostIPC field in the psp and chan
 ![](./Artifacts/policy-3-2.png)
 
 ## Finding 4: Kubernetes Control #5.2.4
----
 We have found that our container shares the host network namespace and it should not be allowed because this can be used to access network traffic to and from other pods. On running the command in the benchmark to fetch the value for `spec.hostNetwork` we can see that it outputs a value **true**.
 
 ![](./Artifacts/policy-4-1.png)
@@ -41,7 +37,6 @@ In order to remediate the finding, we change the hostNetwork field in the psp to
 ![](./Artifacts/policy-4-2.png)
 
 ## Finding 5: Kubernetes Control #5.2.5
----
 We have found that our container runs with allow privilege escalation flag set to true. This should not be allowed because this can allow the container to gain more privileges than the parent. On running the command in the benchmark to fetch the value for `spec.allowPrivilegeEscalation` we can see that it outputs a value **true**.
 
 ![](./Artifacts/policy-5-1.png)
@@ -51,7 +46,6 @@ In order to remediate the finding, we change the allowPrivilegeEscalation field 
 ![](./Artifacts/policy-5-2.png)
 
 ## Finding 6: Kubernetes Control #5.2.6
----
 We have found that our container is allowed to run as root and it should not be allowed because this can be used to break out of the container. On running the command in the benchmark to fetch the value for `spec.runAsUser.rule` we can see that it outputs a value **RunAsAny** which indicates that it is allowed to run as root.
 
 ![](./Artifacts/policy-6-1.png)
@@ -61,7 +55,6 @@ In order to remediate the finding, we change the runAsUser field in the psp and 
 ![](./Artifacts/policy-6-2.png)
 
 ## Finding 7: Kubernetes Control #5.2.7
----
 We have found that our container is running with NET_RAW capability and it should not be allowed because this capability can be misused by an attacker to create further damage if he has gained access to the pod or any other connected pod. On running the command in the benchmark to fetch the value for `spec.requiredDropCapabilities` we can see that it does not output anything. This means that the pod is not dropping any capabilities.
 
 ![](./Artifacts/policy-7-1.png)
@@ -71,7 +64,6 @@ In order to remediate the finding, we change add requiredDropCapabilities field 
 ![](./Artifacts/policy-7-2.png)
 
 ## Finding 8: Kubernetes Control #5.4.1
----
 In this finding we can see in the image below that our pod uses sensitive values like secret key and the database password that is stored directly inside the settings.py and the deployment file in plaintext.
 
 ![](./Artifacts/policy-8.png)
@@ -91,7 +83,6 @@ On apply all the deployments again, we can see that our site is still running as
 ![](./Artifacts/policy-8c.png)
 
 ## Finding 9: Kubernetes Control #5.7.1
----
 We have found that currently there are no namespaces implemented in our deployment. We have to create a namespace so that resources in one namespace are hidden from another namespace which can help reduce the impact in case of an attack. When we run `kubectl get namespaces` we can see that we only have the default namespace.
 
 ![](./Artifacts/policy-9.png)
@@ -106,7 +97,6 @@ Now when we run `kubectl get namespaces` we can see our test namespace also exis
 ![](./Artifacts/policy-9-1.png)
 
 ## Finding 10: Kubernetes Control #5.7.2
----
 We have found that Seccomp is disabled in our cluster. This should not be done because Seccomp restricts the system calls applications make thus allowing administrator a greater control over the security of workload.
 We can see in the below image that our deployment files do not have the securitycontext set.
 
@@ -123,7 +113,6 @@ After making the above changes and applying them we can see that no errors were 
 ![](./Artifacts/policy-10-1.png)
 
 ## Finding 11: Docker Control #4.1
----
 We have found that our Giftcardsite container and the proxy container are running as root. When we run the command from the benchmark to fetch the UID of the containers we can see that the containers are running with the UID of 0 which means root.
 
 ![](./Artifacts/policy-11-1.png)
@@ -133,11 +122,9 @@ In order to remediate the finding, we edit the the Dockerfile for Giftcardsite a
 ![](./Artifacts/policy-11-3.png)
 
 ## Finding 12: Docker Control #4.2
----
 This finding remediated because the dockerfile is already built off of a high trust base image.
 
 ## Finding 13: Docker Control #4.3
----
 Here, we have found that there are unnecessary packages installed on our container. This should not be done because they only increase the attack surface. We can check for all the installed packages using the command `apk info` inside the docker container. We can see the output in the image below.
 
 ![](./Artifacts/policy-13.png)
@@ -151,7 +138,6 @@ We can also see that our website is still working as expected.
 ![](./Artifacts/policy-13-2.png)
 
 ## Finding 14: Docker Control #4.9
----
 We have found that our Dockerfile uses the command ADD in order to copy files from local host to the container. This is dangerous because the ADD command can also be used to fetch files from remote URLs.
 
 In order to mitigate the finding, we use the COPY command instead of add. This command can only copy files and hence cannot be used to fetch malicious files from a remote server.
@@ -163,7 +149,6 @@ After replacing the ADD command with COPY and rebuilding the Dockerfiles we can 
 ![](./Artifacts/policy-14-2.png)
 
 ## Finding 15: Docker Control #4.10
----
 We can see that the Dockerfile inside the db folder uses stored password for the database. This should not be done because the passwords are in plaintext and storing them inside dockerfiles is not a good practice.
 
 In order to remediate the finding:
@@ -180,15 +165,12 @@ After rebuilding the Docker image and applying changes to the deployment file we
 ![](./Artifacts/policy-15-2.png)
 
 ## Finding 16: MySQL Control 1.2
----
 This finding is a pass because we are already using least privileged account to run the MYSQL Service.
 
 ## Finding 17: MySQL Control #2.3
----
 This finding is a pass because we already have a dedicated machine running for MYSQL.
 
 ## Finding 18: MySQL Control #2.7
----
 We have found that the password never expires. This should not happen because users should have to change their password periodically. On running the command in the benchmark we can see that the default_password_lifetime is 0. This means that the password never expires.
 
 ![](./Artifacts/policy-18-1.png)
@@ -198,7 +180,6 @@ In order to remediate the finding, we edit the `setup.sql` file and set the defa
 ![](./Artifacts/policy-18-2.png)
 
 ## Finding 19: MySQL Control #2.9
----
 We have found that there are no policies defined to disable password reuse and ensure strong password policy. When we run the command in the benchmark we get the below output. Both values of 0 mean that there are no rules.
 
 ![](./Artifacts/policy-19-1.png)
@@ -207,8 +188,7 @@ In order to remediate the finding, we edit the `setup.sql` file and set the pass
 
 ![](./Artifacts/policy-19-2.png)
 
-## Finding 19: MySQL Control #4.2
----
+## Finding 20: MySQL Control #4.2
 This finding states that we should not have any test/example databases on our container. On running the command in the benchmark, we can see that we only have our production db running and no other databases. Hence we have already passed this control.
 
 ![](./Artifacts/policy-20-1.png)
