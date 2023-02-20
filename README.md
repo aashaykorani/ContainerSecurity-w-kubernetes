@@ -152,6 +152,11 @@ This should open your browser to the deployed site. You should be able to view
 the first page of the site, and navigate around. If this worked, you are ready
 to move on to the next part.
 --->
+
+## Final Report
+
+Click [here](https://github.com/aashaykorani/ContainerSecurity-w-kubernetes/blob/main/Report/ank8821-Appsec-Lab3.md) to view the final report for the project
+
 ## Part 1: Remediate Security Review Findings
 
 The security team at your organization assessed the application deployment
