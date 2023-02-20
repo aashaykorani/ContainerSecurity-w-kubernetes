@@ -155,7 +155,7 @@ to move on to the next part.
 
 ## Final Report
 
-Click [here](https://github.com/aashaykorani/ContainerSecurity-w-kubernetes/blob/main/Report/ank8821-Appsec-Lab3.md) to view the final report for the project
+Click [here](https://github.com/aashaykorani/ContainerSecurity-w-kubernetes/blob/main/Report/ank8821-Appsec-Lab3.md) to view the final report for the project.
 
 ## Part 1: Remediate Security Review Findings
 
