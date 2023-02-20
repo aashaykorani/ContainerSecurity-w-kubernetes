@@ -1,5 +1,5 @@
-# Homework 3: Deployment Gone Wrong
-
+# Container Security with Kubernetes
+<!---
 ## Introduction
 
 You work for a company which develops a credit card processing application.
@@ -151,7 +151,7 @@ minikube service proxy-service
 This should open your browser to the deployed site. You should be able to view
 the first page of the site, and navigate around. If this worked, you are ready
 to move on to the next part.
-
+--->
 ## Part 1: Remediate Security Review Findings
 
 The security team at your organization assessed the application deployment
